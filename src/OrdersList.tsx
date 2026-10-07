@@ -142,6 +142,24 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                     </div>
                   )}
 
+                  {/* Add-ons */}
+                  {order.addons && order.addons.length > 0 && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm">✨</span>
+                      <div className="flex-1">
+                        <div className="text-xs text-gray-400">Add-ons</div>
+                        <div className="space-y-1 mt-1">
+                          {order.addons.map((addon, idx) => (
+                            <div key={idx} className="flex justify-between text-sm">
+                              <span className="text-gray-700">{addon.name}</span>
+                              <span className="text-amber-600 font-medium">+₹{addon.price}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Notes */}
                   {order.notes && (
                     <div className="flex items-start gap-2">

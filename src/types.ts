@@ -9,6 +9,11 @@ export interface Product {
 
 export type PaymentMethod = 'cod' | 'online';
 
+export interface AddOn {
+  name: string;
+  price: number;
+}
+
 export interface Order {
   id: string;
   product_id: string;
@@ -19,6 +24,7 @@ export interface Order {
   payment_method: PaymentMethod;
   quantity: number;
   total_price: number;
+  addons: AddOn[];
   status: 'pending' | 'completed';
   notes?: string;
   business: 'puan' | 'cake';
