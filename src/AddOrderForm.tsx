@@ -24,7 +24,6 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
   const [addons, setAddons] = useState<AddOn[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Pre-fill form when editing
   useEffect(() => {
     if (editOrder) {
       setCustomerName(editOrder.customer_name);
@@ -48,9 +47,8 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 
-  // Calculate total price
-  const basePrice = selectedProd ? selectedProd.price * (parseInt(quantity) || 1) : 0;
-  const addonsTotal = addons.reduce((sum, addon) => sum + addon.price, 0);
+  const basePrice = selectedProd ? selectedProd.price * (parseInt(quantity) || 0) : 0;
+  const addonsTotal = addons.reduce((sum, addon) => sum + (addon.price || 0), 0);
   const totalPrice = basePrice + addonsTotal;
 
   const handleAddAddon = () => {
@@ -69,12 +67,11 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !contactNumber || !address || !selectedProduct || !selectedProd) return;
 
     const qty = parseInt(quantity) || 1;
     const orderData: Omit<Order, 'id'> = {
-      product_id: selectedProduct,
-      product_name: selectedProd.name,
+      product_id: selectedProduct || '',
+      product_name: selectedProd?.name || '',
       customer_name: customerName,
       contact_number: contactNumber,
       address: address,
@@ -129,14 +126,13 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         {/* Customer Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            👤 Customer Name *
+            👤 Customer Name
           </label>
           <input
             type="text"
             value={customerName}
             onChange={e => setCustomerName(e.target.value)}
             placeholder="Enter customer name"
-            required
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800"
           />
         </div>
@@ -144,14 +140,13 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         {/* Contact Number */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            📞 Contact Number *
+            📞 Contact Number
           </label>
           <input
             type="tel"
             value={contactNumber}
             onChange={e => setContactNumber(e.target.value)}
             placeholder="Phone number"
-            required
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800"
           />
         </div>
@@ -159,13 +154,12 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         {/* Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            📍 Delivery Address *
+            📍 Delivery Address
           </label>
           <textarea
             value={address}
             onChange={e => setAddress(e.target.value)}
             placeholder="Full delivery address"
-            required
             rows={2}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800 resize-none"
           />
@@ -174,17 +168,16 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         {/* Product Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            {business === 'puan' ? '🧵 Select Puan' : '🎂 Select Cake'} *
+            {business === 'puan' ? '🧵 Select Puan' : '🎂 Select Cake'}
           </label>
           {businessProducts.length === 0 ? (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-700">
-              ⚠️ No products added yet. Please add products first!
+              ⚠️ No products added yet. Add products first!
             </div>
           ) : (
             <select
               value={selectedProduct}
               onChange={e => setSelectedProduct(e.target.value)}
-              required
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800 bg-white"
             >
               <option value="">Choose {business === 'puan' ? 'puan' : 'cake'}...</option>
@@ -200,14 +193,13 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         {/* Quantity */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            🔢 Quantity *
+            🔢 Quantity
           </label>
           <input
             type="number"
             min="1"
             value={quantity}
             onChange={e => setQuantity(e.target.value)}
-            required
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800"
           />
         </div>
@@ -217,7 +209,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
           <div className="flex justify-between items-center mb-3">
             <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
               <span className="text-lg">✨</span>
-              Add-ons (Optional)
+              Add-ons
             </label>
             <button
               type="button"
@@ -267,7 +259,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         {/* Payment Method */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            💳 Payment Method *
+            💳 Payment Method
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -296,7 +288,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
         </div>
 
         {/* Total Preview */}
-        {selectedProd && (
+        {selectedProd && totalPrice > 0 && (
           <div className="bg-blue-50 rounded-xl p-3 border border-blue-100 space-y-1">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Base Price:</span>
@@ -359,8 +351,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
           </button>
           <button
             type="submit"
-            disabled={businessProducts.length === 0}
-            className={`flex-1 py-3 rounded-xl text-white font-medium ${themeColors.btn} active:opacity-80 disabled:opacity-50`}
+            className={`flex-1 py-3 rounded-xl text-white font-medium ${themeColors.btn} active:opacity-80`}
           >
             {isEditing ? 'Save Changes ✓' : 'Add Order ✓'}
           </button>
