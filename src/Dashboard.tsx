@@ -13,11 +13,11 @@ const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
   const pendingRevenue = pending.reduce((sum, o) => sum + o.totalPrice, 0);
 
   const themeColors = business === 'puan' 
-    ? { gradient: 'from-purple-500 to-indigo-600', light: 'bg-purple-50', text: 'text-purple-700', accent: 'bg-purple-100' }
+    ? { gradient: 'from-sky-500 to-blue-600', light: 'bg-sky-50', text: 'text-sky-700', accent: 'bg-sky-100' }
     : { gradient: 'from-pink-500 to-rose-600', light: 'bg-pink-50', text: 'text-pink-700', accent: 'bg-pink-100' };
 
   const emoji = business === 'puan' ? '🧵' : '🎂';
-  const businessName = business === 'puan' ? 'Mizo Puan' : 'Cake Orders';
+  const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 
   return (
     <div className="space-y-4">

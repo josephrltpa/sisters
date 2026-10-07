@@ -18,8 +18,10 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
   const businessProducts = products.filter(p => p.category === business);
 
   const themeColors = business === 'puan'
-    ? { btn: 'bg-purple-500', header: 'from-purple-500 to-indigo-600', light: 'bg-purple-50' }
+    ? { btn: 'bg-sky-500', header: 'from-sky-500 to-blue-600', light: 'bg-sky-50' }
     : { btn: 'bg-pink-500', header: 'from-pink-500 to-rose-600', light: 'bg-pink-50' };
+
+  const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +53,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
     <div className="space-y-4">
       <div className={`bg-gradient-to-r ${themeColors.header} rounded-2xl p-4 text-white flex justify-between items-center`}>
         <h2 className="text-lg font-bold">
-          {business === 'puan' ? '🧵 Puan Collection' : '🎂 Cake Menu'}
+          {business === 'puan' ? '🧵' : '🎂'} {business === 'puan' ? 'Puan Collection' : 'Cake Menu'}
         </h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
@@ -74,7 +76,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
               onChange={e => setNewName(e.target.value)}
               placeholder={business === 'puan' ? 'e.g., Puanlen, Puanngai...' : 'e.g., Chocolate Truffle...'}
               required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-purple-400 outline-none"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-sky-400 outline-none"
             />
           </div>
           <div>
@@ -86,7 +88,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
               onChange={e => setNewPrice(e.target.value)}
               placeholder="Enter price"
               required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-purple-400 outline-none"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-sky-400 outline-none"
             />
           </div>
           <div>
@@ -96,7 +98,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
               value={newDesc}
               onChange={e => setNewDesc(e.target.value)}
               placeholder="Brief description..."
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-purple-400 outline-none"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-sky-400 outline-none"
             />
           </div>
           <button

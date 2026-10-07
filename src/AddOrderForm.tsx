@@ -21,8 +21,10 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
   const selectedProd = businessProducts.find(p => p.id === selectedProduct);
 
   const themeColors = business === 'puan'
-    ? { btn: 'bg-purple-500 hover:bg-purple-600', header: 'from-purple-500 to-indigo-600' }
+    ? { btn: 'bg-sky-500 hover:bg-sky-600', header: 'from-sky-500 to-blue-600' }
     : { btn: 'bg-pink-500 hover:bg-pink-600', header: 'from-pink-500 to-rose-600' };
+
+  const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +66,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
     <div className="space-y-4">
       <div className={`bg-gradient-to-r ${themeColors.header} rounded-2xl p-4 text-white`}>
         <h2 className="text-lg font-bold">
-          {business === 'puan' ? '🧵 New Puan Order' : '🎂 New Cake Order'}
+          {business === 'puan' ? '🧵' : '🎂'} New Order — {businessName}
         </h2>
       </div>
 
@@ -80,7 +82,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
             onChange={e => setCustomerName(e.target.value)}
             placeholder="Enter customer name"
             required
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-gray-800"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800"
           />
         </div>
 
@@ -98,7 +100,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
               value={selectedProduct}
               onChange={e => setSelectedProduct(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-gray-800 bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800 bg-white"
             >
               <option value="">Choose {business === 'puan' ? 'puan' : 'cake'}...</option>
               {businessProducts.map(p => (
@@ -121,7 +123,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
             value={quantity}
             onChange={e => setQuantity(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-gray-800"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800"
           />
         </div>
 
@@ -145,7 +147,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
               type="date"
               value={deliveryDate}
               onChange={e => setDeliveryDate(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-gray-800"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all text-gray-800"
             />
           </div>
         )}
@@ -160,7 +162,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
             onChange={e => setNotes(e.target.value)}
             placeholder="Any special instructions..."
             rows={3}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-gray-800 resize-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800 resize-none"
           />
         </div>
 
