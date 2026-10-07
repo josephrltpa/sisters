@@ -41,6 +41,7 @@ const BusinessScreen: React.FC<BusinessScreenProps> = ({ business, onBack }) => 
   const [view, setView] = useState<ViewType>('dashboard');
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
 
   const refreshData = async () => {
     const [productsData, ordersData] = await Promise.all([
@@ -55,6 +56,22 @@ const BusinessScreen: React.FC<BusinessScreenProps> = ({ business, onBack }) => 
     refreshData();
   }, [business]);
 
+  const handleEditOrder = (order: Order) => {
+    setEditingOrder(order);
+    setView('add-order');
+  };
+
+  const handleBackFromForm = () => {
+    setEditingOrder(null);
+    setView('orders');
+  };
+
+  const handleOrderAdded = async () => {
+    setEditingOrder(null);
+    await refreshData();
+    setView('orders');
+  };
+
   const themeColors = business === 'puan'
     ? { gradient: 'from-sky-400 to-sky-500', navActive: 'text-sky-500' }
     : { gradient: 'from-pink-300 to-pink-400', navActive: 'text-pink-500' };
@@ -67,9 +84,17 @@ const BusinessScreen: React.FC<BusinessScreenProps> = ({ business, onBack }) => 
       case 'dashboard':
         return <Dashboard business={business} orders={orders} />;
       case 'orders':
-        return <OrdersList business={business} orders={orders} onRefresh={refreshData} />;
+        return <OrdersList business={business} orders={orders} onRefresh={refreshData} onEdit={handleEditOrder} />;
       case 'add-order':
-        return <AddOrderForm business={business} products={products} onOrderAdded={() => { refreshData(); setView('orders'); }} onBack={() => setView('orders')} />;
+        return (
+          <AddOrderForm 
+            business={business} 
+            products={products} 
+            editOrder={editingOrder}
+            onOrderAdded={handleOrderAdded} 
+            onBack={handleBackFromForm} 
+          />
+        );
       case 'products':
         return <ProductsList business={business} products={products} onRefresh={refreshData} />;
       default:
@@ -107,28 +132,28 @@ const BusinessScreen: React.FC<BusinessScreenProps> = ({ business, onBack }) => 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex shadow-lg">
         <button
-          onClick={() => setView('dashboard')}
+          onClick={() => { setEditingOrder(null); setView('dashboard'); }}
           className={`flex-1 py-3 flex flex-col items-center gap-0.5 transition-colors ${view === 'dashboard' ? themeColors.navActive : 'text-gray-400'}`}
         >
           <span className="text-xl">📊</span>
           <span className="text-[10px] font-medium">Dashboard</span>
         </button>
         <button
-          onClick={() => setView('orders')}
+          onClick={() => { setEditingOrder(null); setView('orders'); }}
           className={`flex-1 py-3 flex flex-col items-center gap-0.5 transition-colors ${view === 'orders' || view === 'add-order' ? themeColors.navActive : 'text-gray-400'}`}
         >
           <span className="text-xl">📋</span>
           <span className="text-[10px] font-medium">Orders</span>
         </button>
         <button
-          onClick={() => setView('add-order')}
-          className={`flex-1 py-3 flex flex-col items-center gap-0.5 transition-colors ${view === 'add-order' ? themeColors.navActive : 'text-gray-400'}`}
+          onClick={() => { setEditingOrder(null); setView('add-order'); }}
+          className={`flex-1 py-3 flex flex-col items-center gap-0.5 transition-colors ${view === 'add-order' && !editingOrder ? themeColors.navActive : 'text-gray-400'}`}
         >
           <span className="text-xl">➕</span>
           <span className="text-[10px] font-medium">New Order</span>
         </button>
         <button
-          onClick={() => setView('products')}
+          onClick={() => { setEditingOrder(null); setView('products'); }}
           className={`flex-1 py-3 flex flex-col items-center gap-0.5 transition-colors ${view === 'products' ? themeColors.navActive : 'text-gray-400'}`}
         >
           <span className="text-xl">📦</span>
