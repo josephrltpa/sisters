@@ -7,11 +7,16 @@ export interface Product {
   created_at?: string;
 }
 
+export type PaymentMethod = 'cod' | 'online';
+
 export interface Order {
   id: string;
   product_id: string;
   product_name: string;
   customer_name: string;
+  contact_number: string;
+  address: string;
+  payment_method: PaymentMethod;
   quantity: number;
   total_price: number;
   status: 'pending' | 'completed';

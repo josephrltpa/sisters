@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BusinessType, Product, Order } from './types';
-import { addOrder, generateId } from './storage';
+import { BusinessType, Product, Order, PaymentMethod } from './types';
+import { addOrder } from './storage';
 
 interface AddOrderFormProps {
   business: BusinessType;
@@ -11,10 +11,13 @@ interface AddOrderFormProps {
 
 const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrderAdded, onBack }) => {
   const [customerName, setCustomerName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [address, setAddress] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [quantity, setQuantity] = useState('1');
   const [notes, setNotes] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
   const [showSuccess, setShowSuccess] = useState(false);
 
   const businessProducts = products.filter(p => p.category === business);
@@ -28,13 +31,16 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !selectedProduct || !selectedProd) return;
+    if (!customerName || !contactNumber || !address || !selectedProduct || !selectedProd) return;
 
     const qty = parseInt(quantity) || 1;
     const order: Omit<Order, 'id'> = {
       product_id: selectedProduct,
       product_name: selectedProd.name,
       customer_name: customerName,
+      contact_number: contactNumber,
+      address: address,
+      payment_method: paymentMethod,
       quantity: qty,
       total_price: selectedProd.price * qty,
       status: 'pending',
@@ -84,6 +90,36 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
           />
         </div>
 
+        {/* Contact Number */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            📞 Contact Number *
+          </label>
+          <input
+            type="tel"
+            value={contactNumber}
+            onChange={e => setContactNumber(e.target.value)}
+            placeholder="Phone number"
+            required
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800"
+          />
+        </div>
+
+        {/* Address */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            📍 Delivery Address *
+          </label>
+          <textarea
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            placeholder="Full delivery address"
+            required
+            rows={2}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800 resize-none"
+          />
+        </div>
+
         {/* Product Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -125,12 +161,47 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
           />
         </div>
 
+        {/* Payment Method */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            💳 Payment Method *
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setPaymentMethod('cod')}
+              className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
+                paymentMethod === 'cod'
+                  ? 'border-green-400 bg-green-50 text-green-700'
+                  : 'border-gray-200 bg-white text-gray-500'
+              }`}
+            >
+              💵 Cash on Delivery
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaymentMethod('online')}
+              className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
+                paymentMethod === 'online'
+                  ? 'border-blue-400 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-500'
+              }`}
+            >
+              📱 Online Payment
+            </button>
+          </div>
+        </div>
+
         {/* Total Preview */}
         {selectedProd && (
           <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Total Amount:</span>
               <span className="font-bold text-blue-700">₹{(selectedProd.price * (parseInt(quantity) || 1)).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-xs mt-1">
+              <span className="text-gray-400">Payment:</span>
+              <span className="text-gray-500">{paymentMethod === 'cod' ? '💵 COD' : '📱 Online'}</span>
             </div>
           </div>
         )}
@@ -159,7 +230,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
             value={notes}
             onChange={e => setNotes(e.target.value)}
             placeholder="Any special instructions..."
-            rows={3}
+            rows={2}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all text-gray-800 resize-none"
           />
         </div>
