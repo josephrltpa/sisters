@@ -6,9 +6,10 @@ interface OrdersListProps {
   business: BusinessType;
   orders: Order[];
   onRefresh: () => void;
+  onEdit: (order: Order) => void;
 }
 
-const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) => {
+const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, onEdit }) => {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [showConfirm, setShowConfirm] = useState<string | null>(null);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
@@ -161,6 +162,12 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
                   className={`flex-1 py-2 rounded-lg text-white text-sm font-medium ${themeColors.btn} active:opacity-80`}
                 >
                   {order.status === 'pending' ? '✅ Mark Done' : '↩️ Reopen'}
+                </button>
+                <button
+                  onClick={() => onEdit(order)}
+                  className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg text-sm font-medium active:bg-amber-200"
+                >
+                  ✏️ Edit
                 </button>
                 {showConfirm === order.id ? (
                   <div className="flex gap-1">

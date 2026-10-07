@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BusinessType, Product, Order, PaymentMethod } from './types';
-import { addOrder } from './storage';
+import { addOrder, updateOrder } from './storage';
 
 interface AddOrderFormProps {
   business: BusinessType;
   products: Product[];
+  editOrder?: Order | null;
   onOrderAdded: () => void;
   onBack: () => void;
 }
 
-const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrderAdded, onBack }) => {
+const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrder, onOrderAdded, onBack }) => {
+  const isEditing = !!editOrder;
+
   const [customerName, setCustomerName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [address, setAddress] = useState('');
@@ -19,6 +22,20 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
   const [deliveryDate, setDeliveryDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (editOrder) {
+      setCustomerName(editOrder.customer_name);
+      setContactNumber(editOrder.contact_number);
+      setAddress(editOrder.address);
+      setSelectedProduct(editOrder.product_id);
+      setQuantity(editOrder.quantity.toString());
+      setNotes(editOrder.notes || '');
+      setDeliveryDate(editOrder.delivery_date || '');
+      setPaymentMethod(editOrder.payment_method);
+    }
+  }, [editOrder]);
 
   const businessProducts = products.filter(p => p.category === business);
   const selectedProd = businessProducts.find(p => p.id === selectedProduct);
@@ -34,7 +51,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
     if (!customerName || !contactNumber || !address || !selectedProduct || !selectedProd) return;
 
     const qty = parseInt(quantity) || 1;
-    const order: Omit<Order, 'id'> = {
+    const orderData: Omit<Order, 'id'> = {
       product_id: selectedProduct,
       product_name: selectedProd.name,
       customer_name: customerName,
@@ -43,13 +60,18 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
       payment_method: paymentMethod,
       quantity: qty,
       total_price: selectedProd.price * qty,
-      status: 'pending',
+      status: editOrder?.status || 'pending',
       notes: notes || undefined,
       business,
       delivery_date: deliveryDate || undefined,
     };
 
-    await addOrder(order);
+    if (isEditing && editOrder) {
+      await updateOrder(editOrder.id, orderData);
+    } else {
+      await addOrder(orderData);
+    }
+
     setShowSuccess(true);
     setTimeout(() => {
       onOrderAdded();
@@ -60,7 +82,9 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="text-6xl mb-4 animate-bounce">✅</div>
-        <p className="text-lg font-semibold text-gray-700">Order Added!</p>
+        <p className="text-lg font-semibold text-gray-700">
+          {isEditing ? 'Order Updated!' : 'Order Added!'}
+        </p>
         <p className="text-sm text-gray-500 mt-1">Redirecting...</p>
       </div>
     );
@@ -68,10 +92,15 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
 
   return (
     <div className="space-y-4">
-      <div className={`bg-gradient-to-r ${themeColors.header} rounded-2xl p-4 text-white`}>
+      <div className={`bg-gradient-to-r ${themeColors.header} rounded-2xl p-4 text-white flex justify-between items-center`}>
         <h2 className="text-lg font-bold">
-          {business === 'puan' ? '🧵' : '🎂'} New Order — {businessName}
+          {isEditing ? '✏️ Edit Order' : `${business === 'puan' ? '🧵' : '🎂'} New Order`}
         </h2>
+        {isEditing && (
+          <span className="text-xs bg-white/20 px-2 py-1 rounded-full">
+            {businessName}
+          </span>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -249,7 +278,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
             disabled={businessProducts.length === 0}
             className={`flex-1 py-3 rounded-xl text-white font-medium ${themeColors.btn} active:opacity-80 disabled:opacity-50`}
           >
-            Add Order ✓
+            {isEditing ? 'Save Changes ✓' : 'Add Order ✓'}
           </button>
         </div>
       </form>

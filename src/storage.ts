@@ -87,6 +87,18 @@ export async function updateOrderStatus(id: string, status: 'pending' | 'complet
   }
 }
 
+export async function updateOrder(id: string, updates: Partial<Omit<Order, 'id'>>) {
+  const { error } = await supabase
+    .from('orders')
+    .update(updates)
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error updating order:', error);
+    throw error;
+  }
+}
+
 export async function deleteOrder(id: string) {
   const { error } = await supabase
     .from('orders')
