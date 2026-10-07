@@ -15,16 +15,16 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
   const filteredOrders = orders.filter(o => {
     if (filter === 'all') return true;
     return o.status === filter;
-  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }).sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime());
 
-  const handleToggleStatus = (order: Order) => {
+  const handleToggleStatus = async (order: Order) => {
     const newStatus = order.status === 'pending' ? 'completed' : 'pending';
-    updateOrderStatus(order.id, newStatus);
+    await updateOrderStatus(order.id, newStatus);
     onRefresh();
   };
 
-  const handleDelete = (id: string) => {
-    deleteOrder(id);
+  const handleDelete = async (id: string) => {
+    await deleteOrder(id);
     setShowConfirm(null);
     onRefresh();
   };
@@ -64,8 +64,8 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
             <div key={order.id} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <div className="font-semibold text-gray-800">{order.customerName}</div>
-                  <div className="text-sm text-gray-600">{order.productName} × {order.quantity}</div>
+                  <div className="font-semibold text-gray-800">{order.customer_name}</div>
+                  <div className="text-sm text-gray-600">{order.product_name} × {order.quantity}</div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                   order.status === 'pending' 
@@ -77,8 +77,8 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
               </div>
               
               <div className="flex justify-between items-center text-sm text-gray-500 mb-3">
-                <span>₹{order.totalPrice.toLocaleString()}</span>
-                <span>{new Date(order.date).toLocaleDateString()}</span>
+                <span>₹{order.total_price.toLocaleString()}</span>
+                <span>{new Date(order.created_at || '').toLocaleDateString()}</span>
               </div>
 
               {order.notes && (
@@ -87,9 +87,9 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
                 </div>
               )}
 
-              {order.deliveryDate && (
+              {order.delivery_date && (
                 <div className="text-xs text-blue-600 mb-3">
-                  📅 Delivery: {new Date(order.deliveryDate).toLocaleDateString()}
+                  📅 Delivery: {new Date(order.delivery_date).toLocaleDateString()}
                 </div>
               )}
 

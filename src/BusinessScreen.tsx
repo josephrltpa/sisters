@@ -42,9 +42,13 @@ const BusinessScreen: React.FC<BusinessScreenProps> = ({ business, onBack }) => 
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const refreshData = () => {
-    setProducts(getProducts());
-    setOrders(getOrders(business));
+  const refreshData = async () => {
+    const [productsData, ordersData] = await Promise.all([
+      getProducts(),
+      getOrders(business)
+    ]);
+    setProducts(productsData);
+    setOrders(ordersData);
   };
 
   useEffect(() => {

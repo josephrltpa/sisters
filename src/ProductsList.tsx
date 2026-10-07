@@ -23,19 +23,18 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName || !newPrice) return;
 
-    const product: Product = {
-      id: generateId(),
+    const product: Omit<Product, 'id'> = {
       name: newName,
       price: parseFloat(newPrice),
       category: business,
       description: newDesc || undefined,
     };
 
-    addProduct(product);
+    await addProduct(product);
     setNewName('');
     setNewPrice('');
     setNewDesc('');
@@ -43,8 +42,8 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
     onRefresh();
   };
 
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
+  const handleDelete = async (id: string) => {
+    await deleteProduct(id);
     setDeleteConfirm(null);
     onRefresh();
   };

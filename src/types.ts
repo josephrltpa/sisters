@@ -4,20 +4,21 @@ export interface Product {
   price: number;
   category: 'puan' | 'cake';
   description?: string;
+  created_at?: string;
 }
 
 export interface Order {
   id: string;
-  productId: string;
-  productName: string;
-  customerName: string;
+  product_id: string;
+  product_name: string;
+  customer_name: string;
   quantity: number;
-  totalPrice: number;
+  total_price: number;
   status: 'pending' | 'completed';
-  date: string;
   notes?: string;
   business: 'puan' | 'cake';
-  deliveryDate?: string;
+  delivery_date?: string;
+  created_at?: string;
 }
 
 export type BusinessType = 'puan' | 'cake';

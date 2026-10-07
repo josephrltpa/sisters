@@ -1,59 +1,104 @@
+import { supabase } from './supabaseClient';
 import { Product, Order } from './types';
 
-const PRODUCTS_KEY = 'order_tracker_products';
-const ORDERS_KEY = 'order_tracker_orders';
+// Products
+export async function getProducts(): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-export function getProducts(): Product[] {
-  const data = localStorage.getItem(PRODUCTS_KEY);
-  return data ? JSON.parse(data) : [];
-}
-
-export function saveProducts(products: Product[]) {
-  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-}
-
-export function addProduct(product: Product) {
-  const products = getProducts();
-  products.push(product);
-  saveProducts(products);
-}
-
-export function deleteProduct(id: string) {
-  const products = getProducts().filter(p => p.id !== id);
-  saveProducts(products);
-}
-
-export function getOrders(business?: 'puan' | 'cake'): Order[] {
-  const data = localStorage.getItem(ORDERS_KEY);
-  const orders: Order[] = data ? JSON.parse(data) : [];
-  if (business) {
-    return orders.filter(o => o.business === business);
+  if (error) {
+    console.error('Error fetching products:', error);
+    return [];
   }
-  return orders;
+  return data || [];
 }
 
-export function saveOrders(orders: Order[]) {
-  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+export async function addProduct(product: Omit<Product, 'id'>) {
+  const { data, error } = await supabase
+    .from('products')
+    .insert([product])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding product:', error);
+    throw error;
+  }
+  return data;
 }
 
-export function addOrder(order: Order) {
-  const orders = getOrders();
-  orders.push(order);
-  saveOrders(orders);
+export async function deleteProduct(id: string) {
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting product:', error);
+    throw error;
+  }
 }
 
-export function updateOrderStatus(id: string, status: 'pending' | 'completed') {
-  const orders = getOrders().map(o => 
-    o.id === id ? { ...o, status } : o
-  );
-  saveOrders(orders);
+// Orders
+export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
+  let query = supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (business) {
+    query = query.eq('business', business);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Error fetching orders:', error);
+    return [];
+  }
+  return data || [];
 }
 
-export function deleteOrder(id: string) {
-  const orders = getOrders().filter(o => o.id !== id);
-  saveOrders(orders);
+export async function addOrder(order: Omit<Order, 'id'>) {
+  const { data, error } = await supabase
+    .from('orders')
+    .insert([order])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding order:', error);
+    throw error;
+  }
+  return data;
+}
+
+export async function updateOrderStatus(id: string, status: 'pending' | 'completed') {
+  const { error } = await supabase
+    .from('orders')
+    .update({ status })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
+}
+
+export async function deleteOrder(id: string) {
+  const { error } = await supabase
+    .from('orders')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting order:', error);
+    throw error;
+  }
 }
 
 export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  return crypto.randomUUID();
 }

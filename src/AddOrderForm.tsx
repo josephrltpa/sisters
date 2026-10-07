@@ -26,26 +26,24 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName || !selectedProduct || !selectedProd) return;
 
     const qty = parseInt(quantity) || 1;
-    const order: Order = {
-      id: generateId(),
-      productId: selectedProduct,
-      productName: selectedProd.name,
-      customerName,
+    const order: Omit<Order, 'id'> = {
+      product_id: selectedProduct,
+      product_name: selectedProd.name,
+      customer_name: customerName,
       quantity: qty,
-      totalPrice: selectedProd.price * qty,
+      total_price: selectedProd.price * qty,
       status: 'pending',
-      date: new Date().toISOString(),
       notes: notes || undefined,
       business,
-      deliveryDate: deliveryDate || undefined,
+      delivery_date: deliveryDate || undefined,
     };
 
-    addOrder(order);
+    await addOrder(order);
     setShowSuccess(true);
     setTimeout(() => {
       onOrderAdded();
