@@ -13,8 +13,8 @@ const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
   const pendingRevenue = pending.reduce((sum, o) => sum + o.totalPrice, 0);
 
   const themeColors = business === 'puan' 
-    ? { gradient: 'from-sky-500 to-blue-600', light: 'bg-sky-50', text: 'text-sky-700', accent: 'bg-sky-100' }
-    : { gradient: 'from-pink-500 to-rose-600', light: 'bg-pink-50', text: 'text-pink-700', accent: 'bg-pink-100' };
+    ? { gradient: 'from-sky-400 to-sky-500', light: 'bg-sky-50', text: 'text-sky-700', accent: 'bg-sky-100' }
+    : { gradient: 'from-pink-300 to-pink-400', light: 'bg-pink-50', text: 'text-pink-600', accent: 'bg-pink-100' };
 
   const emoji = business === 'puan' ? '🧵' : '🎂';
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';

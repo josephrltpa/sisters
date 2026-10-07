@@ -21,8 +21,8 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, onOrder
   const selectedProd = businessProducts.find(p => p.id === selectedProduct);
 
   const themeColors = business === 'puan'
-    ? { btn: 'bg-sky-500 hover:bg-sky-600', header: 'from-sky-500 to-blue-600' }
-    : { btn: 'bg-pink-500 hover:bg-pink-600', header: 'from-pink-500 to-rose-600' };
+    ? { btn: 'bg-sky-400 hover:bg-sky-500', header: 'from-sky-400 to-sky-500' }
+    : { btn: 'bg-pink-300 hover:bg-pink-400', header: 'from-pink-300 to-pink-400' };
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 

@@ -25,15 +25,15 @@ const PuanLogoSmall = () => (
 
 const CakeLogoSmall = () => (
   <svg viewBox="0 0 32 32" className="w-7 h-7">
-    <rect x="6" y="17" width="20" height="10" rx="2" fill="#f472b6"/>
-    <rect x="6" y="17" width="20" height="4" rx="2" fill="#ec4899"/>
-    <rect x="8" y="11" width="16" height="7" rx="2" fill="#fb7185"/>
-    <rect x="8" y="11" width="16" height="3" rx="2" fill="#f43f5e"/>
-    <circle cx="10" cy="17" r="1.5" fill="#fce7f3"/>
-    <circle cx="16" cy="17.5" r="1.5" fill="#fce7f3"/>
-    <circle cx="22" cy="17" r="1.5" fill="#fce7f3"/>
-    <circle cx="16" cy="9" r="2.5" fill="#e11d48"/>
-    <path d="M16 6.5 Q18 4 19 5" stroke="#16a34a" strokeWidth="1" fill="none" strokeLinecap="round"/>
+    <rect x="6" y="17" width="20" height="10" rx="2" fill="#fbcfe8"/>
+    <rect x="6" y="17" width="20" height="4" rx="2" fill="#f9a8d4"/>
+    <rect x="8" y="11" width="16" height="7" rx="2" fill="#f9a8d4"/>
+    <rect x="8" y="11" width="16" height="3" rx="2" fill="#f472b6"/>
+    <circle cx="10" cy="17" r="1.5" fill="#fff1f2"/>
+    <circle cx="16" cy="17.5" r="1.5" fill="#fff1f2"/>
+    <circle cx="22" cy="17" r="1.5" fill="#fff1f2"/>
+    <circle cx="16" cy="9" r="2.5" fill="#fb7185"/>
+    <path d="M16 6.5 Q18 4 19 5" stroke="#4ade80" strokeWidth="1" fill="none" strokeLinecap="round"/>
   </svg>
 );
 
@@ -52,8 +52,8 @@ const BusinessScreen: React.FC<BusinessScreenProps> = ({ business, onBack }) => 
   }, [business]);
 
   const themeColors = business === 'puan'
-    ? { gradient: 'from-sky-500 to-blue-600', navActive: 'text-sky-600' }
-    : { gradient: 'from-pink-500 to-rose-600', navActive: 'text-pink-600' };
+    ? { gradient: 'from-sky-400 to-sky-500', navActive: 'text-sky-500' }
+    : { gradient: 'from-pink-300 to-pink-400', navActive: 'text-pink-500' };
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
   const subtitle = business === 'puan' ? 'Traditional Mizo Textiles' : 'Freshly Baked Goodness';

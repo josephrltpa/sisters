@@ -30,8 +30,8 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
   };
 
   const themeColors = business === 'puan'
-    ? { badge: 'bg-sky-100 text-sky-700', btn: 'bg-sky-500' }
-    : { badge: 'bg-pink-100 text-pink-700', btn: 'bg-pink-500' };
+    ? { badge: 'bg-sky-100 text-sky-700', btn: 'bg-sky-400' }
+    : { badge: 'bg-pink-100 text-pink-500', btn: 'bg-pink-300' };
 
   return (
     <div className="space-y-3">

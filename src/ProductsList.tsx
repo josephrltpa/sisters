@@ -18,8 +18,8 @@ const ProductsList: React.FC<ProductsListProps> = ({ business, products, onRefre
   const businessProducts = products.filter(p => p.category === business);
 
   const themeColors = business === 'puan'
-    ? { btn: 'bg-sky-500', header: 'from-sky-500 to-blue-600', light: 'bg-sky-50' }
-    : { btn: 'bg-pink-500', header: 'from-pink-500 to-rose-600', light: 'bg-pink-50' };
+    ? { btn: 'bg-sky-400', header: 'from-sky-400 to-sky-500', light: 'bg-sky-50' }
+    : { btn: 'bg-pink-300', header: 'from-pink-300 to-pink-400', light: 'bg-pink-50' };
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
 

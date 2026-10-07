@@ -27,28 +27,28 @@ const PuanLogo = () => (
 const CakeLogo = () => (
   <svg viewBox="0 0 64 64" className="w-full h-full">
     {/* Cake base */}
-    <rect x="12" y="34" width="40" height="20" rx="4" fill="#f472b6"/>
-    <rect x="12" y="34" width="40" height="8" rx="4" fill="#ec4899"/>
+    <rect x="12" y="34" width="40" height="20" rx="4" fill="#fbcfe8"/>
+    <rect x="12" y="34" width="40" height="8" rx="4" fill="#f9a8d4"/>
     {/* Cake top layer */}
-    <rect x="16" y="22" width="32" height="14" rx="4" fill="#fb7185"/>
-    <rect x="16" y="22" width="32" height="6" rx="4" fill="#f43f5e"/>
+    <rect x="16" y="22" width="32" height="14" rx="4" fill="#f9a8d4"/>
+    <rect x="16" y="22" width="32" height="6" rx="4" fill="#f472b6"/>
     {/* Frosting drips */}
-    <circle cx="20" cy="34" r="3" fill="#fce7f3"/>
-    <circle cx="32" cy="35" r="3.5" fill="#fce7f3"/>
-    <circle cx="44" cy="34" r="3" fill="#fce7f3"/>
+    <circle cx="20" cy="34" r="3" fill="#fff1f2"/>
+    <circle cx="32" cy="35" r="3.5" fill="#fff1f2"/>
+    <circle cx="44" cy="34" r="3" fill="#fff1f2"/>
     {/* Cherry on top */}
-    <circle cx="32" cy="18" r="5" fill="#e11d48"/>
-    <path d="M32 13 Q35 8 38 10" stroke="#16a34a" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+    <circle cx="32" cy="18" r="5" fill="#fb7185"/>
+    <path d="M32 13 Q35 8 38 10" stroke="#4ade80" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
     {/* Sparkles */}
-    <circle cx="14" cy="16" r="1.5" fill="#fbbf24"/>
-    <circle cx="50" cy="20" r="1.5" fill="#fbbf24"/>
-    <circle cx="48" cy="12" r="1" fill="#fbbf24"/>
+    <circle cx="14" cy="16" r="1.5" fill="#fde68a"/>
+    <circle cx="50" cy="20" r="1.5" fill="#fde68a"/>
+    <circle cx="48" cy="12" r="1" fill="#fde68a"/>
   </svg>
 );
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectBusiness }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-pink-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-pink-100 flex flex-col items-center justify-center p-6">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-1">📋 Order Tracker</h1>
         <p className="text-gray-400 text-sm">Select your business</p>
@@ -78,17 +78,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectBusiness }) => {
         {/* Cake-A-Licious Card */}
         <button
           onClick={() => onSelectBusiness('cake')}
-          className="w-full bg-white rounded-2xl shadow-lg p-5 flex items-center gap-4 active:scale-[0.97] transition-transform border border-pink-100"
+          className="w-full bg-white rounded-2xl shadow-lg p-5 flex items-center gap-4 active:scale-[0.97] transition-transform border border-pink-200"
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
+          <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
             <CakeLogo />
           </div>
           <div className="text-left flex-1">
             <h2 className="text-lg font-bold text-gray-800">Cake-A-Licious</h2>
-            <p className="text-sm text-pink-600 font-medium">Freshly Baked Goodness</p>
+            <p className="text-sm text-pink-400 font-medium">Freshly Baked Goodness</p>
             <p className="text-xs text-gray-400 mt-0.5">Track cake orders & baking</p>
           </div>
-          <div className="text-pink-400 flex-shrink-0">
+          <div className="text-pink-300 flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
