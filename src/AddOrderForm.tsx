@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BusinessType, Product, Order, PaymentMethod } from './types';
+import { BusinessType, Product, Order, PaymentMethod, AddOn } from './types';
 import { addOrder, updateOrder } from './storage';
 
 interface AddOrderFormProps {
@@ -21,6 +21,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
   const [notes, setNotes] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
+  const [addons, setAddons] = useState<AddOn[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Pre-fill form when editing
@@ -34,6 +35,7 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
       setNotes(editOrder.notes || '');
       setDeliveryDate(editOrder.delivery_date || '');
       setPaymentMethod(editOrder.payment_method);
+      setAddons(editOrder.addons || []);
     }
   }, [editOrder]);
 
@@ -45,6 +47,25 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
     : { btn: 'bg-pink-300 hover:bg-pink-400', header: 'from-pink-300 to-pink-400' };
 
   const businessName = business === 'puan' ? 'Nihawi Puan' : 'Cake-A-Licious';
+
+  // Calculate total price
+  const basePrice = selectedProd ? selectedProd.price * (parseInt(quantity) || 1) : 0;
+  const addonsTotal = addons.reduce((sum, addon) => sum + addon.price, 0);
+  const totalPrice = basePrice + addonsTotal;
+
+  const handleAddAddon = () => {
+    setAddons([...addons, { name: '', price: 0 }]);
+  };
+
+  const handleRemoveAddon = (index: number) => {
+    setAddons(addons.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateAddon = (index: number, field: keyof AddOn, value: string | number) => {
+    const updated = [...addons];
+    updated[index] = { ...updated[index], [field]: value };
+    setAddons(updated);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +80,8 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
       address: address,
       payment_method: paymentMethod,
       quantity: qty,
-      total_price: selectedProd.price * qty,
+      total_price: totalPrice,
+      addons: addons.filter(a => a.name.trim() !== ''),
       status: editOrder?.status || 'pending',
       notes: notes || undefined,
       business,
@@ -190,6 +212,58 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
           />
         </div>
 
+        {/* Add-ons Section */}
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+          <div className="flex justify-between items-center mb-3">
+            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <span className="text-lg">✨</span>
+              Add-ons (Optional)
+            </label>
+            <button
+              type="button"
+              onClick={handleAddAddon}
+              className="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-white text-xs font-medium rounded-lg transition-colors"
+            >
+              + Add Item
+            </button>
+          </div>
+
+          {addons.length === 0 ? (
+            <p className="text-xs text-gray-500 text-center py-2">
+              No add-ons yet. Tap "+ Add Item" to add extras.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {addons.map((addon, index) => (
+                <div key={index} className="flex gap-2 items-center bg-white rounded-lg p-2 border border-amber-100">
+                  <input
+                    type="text"
+                    value={addon.name}
+                    onChange={e => handleUpdateAddon(index, 'name', e.target.value)}
+                    placeholder="Add-on name"
+                    className="flex-1 px-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:border-amber-400 outline-none"
+                  />
+                  <input
+                    type="number"
+                    value={addon.price || ''}
+                    onChange={e => handleUpdateAddon(index, 'price', parseFloat(e.target.value) || 0)}
+                    placeholder="₹"
+                    min="0"
+                    className="w-20 px-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:border-amber-400 outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAddon(index)}
+                    className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Payment Method */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -223,10 +297,20 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
 
         {/* Total Preview */}
         {selectedProd && (
-          <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
+          <div className="bg-blue-50 rounded-xl p-3 border border-blue-100 space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Total Amount:</span>
-              <span className="font-bold text-blue-700">₹{(selectedProd.price * (parseInt(quantity) || 1)).toLocaleString()}</span>
+              <span className="text-gray-600">Base Price:</span>
+              <span className="text-gray-700">₹{basePrice.toLocaleString()}</span>
+            </div>
+            {addonsTotal > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Add-ons:</span>
+                <span className="text-gray-700">+₹{addonsTotal.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-sm font-bold border-t border-blue-200 pt-1 mt-1">
+              <span className="text-blue-700">Total Amount:</span>
+              <span className="text-blue-700">₹{totalPrice.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-xs mt-1">
               <span className="text-gray-400">Payment:</span>

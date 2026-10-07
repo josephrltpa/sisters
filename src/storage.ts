@@ -58,13 +58,24 @@ export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
     console.error('Error fetching orders:', error);
     return [];
   }
-  return data || [];
+
+  // Parse addons JSON string back to array
+  return (data || []).map(order => ({
+    ...order,
+    addons: typeof order.addons === 'string' ? JSON.parse(order.addons) : (order.addons || [])
+  }));
 }
 
 export async function addOrder(order: Omit<Order, 'id'>) {
+  // Convert addons array to JSON string for Supabase
+  const orderData = {
+    ...order,
+    addons: JSON.stringify(order.addons || [])
+  };
+
   const { data, error } = await supabase
     .from('orders')
-    .insert([order])
+    .insert([orderData])
     .select()
     .single();
 
@@ -88,9 +99,15 @@ export async function updateOrderStatus(id: string, status: 'pending' | 'complet
 }
 
 export async function updateOrder(id: string, updates: Partial<Omit<Order, 'id'>>) {
+  // Convert addons array to JSON string if present
+  const updateData = {
+    ...updates,
+    addons: updates.addons ? JSON.stringify(updates.addons) : undefined
+  };
+
   const { error } = await supabase
     .from('orders')
-    .update(updates)
+    .update(updateData)
     .eq('id', id);
 
   if (error) {
