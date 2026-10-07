@@ -11,6 +11,7 @@ interface OrdersListProps {
 const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) => {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [showConfirm, setShowConfirm] = useState<string | null>(null);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   const filteredOrders = orders.filter(o => {
     if (filter === 'all') return true;
@@ -61,40 +62,100 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh }) 
       ) : (
         <div className="space-y-2">
           {filteredOrders.map(order => (
-            <div key={order.id} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <div className="font-semibold text-gray-800">{order.customer_name}</div>
-                  <div className="text-sm text-gray-600">{order.product_name} × {order.quantity}</div>
+            <div key={order.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              {/* Order Header */}
+              <div 
+                className="p-4 cursor-pointer active:bg-gray-50"
+                onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <div className="font-semibold text-gray-800">{order.customer_name}</div>
+                    <div className="text-sm text-gray-600">{order.product_name} × {order.quantity}</div>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    order.status === 'pending' 
+                      ? 'bg-orange-100 text-orange-700' 
+                      : 'bg-green-100 text-green-700'
+                  }`}>
+                    {order.status === 'pending' ? '⏳ Pending' : '✅ Done'}
+                  </span>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  order.status === 'pending' 
-                    ? 'bg-orange-100 text-orange-700' 
-                    : 'bg-green-100 text-green-700'
-                }`}>
-                  {order.status === 'pending' ? '⏳ Pending' : '✅ Done'}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center text-sm text-gray-500 mb-3">
-                <span>₹{order.total_price.toLocaleString()}</span>
-                <span>{new Date(order.created_at || '').toLocaleDateString()}</span>
+                
+                <div className="flex justify-between items-center text-sm text-gray-500">
+                  <span>₹{order.total_price.toLocaleString()}</span>
+                  <span>{new Date(order.created_at || '').toLocaleDateString()}</span>
+                </div>
+
+                {/* Expand indicator */}
+                <div className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                  <span>{expandedOrder === order.id ? '▲' : '▼'}</span>
+                  <span>Tap for details</span>
+                </div>
               </div>
 
-              {order.notes && (
-                <div className="text-xs text-gray-400 italic mb-3 bg-gray-50 rounded-lg p-2">
-                  📝 {order.notes}
-                </div>
-              )}
+              {/* Expanded Details */}
+              {expandedOrder === order.id && (
+                <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-gray-50 space-y-2">
+                  {/* Contact */}
+                  <div className="flex items-start gap-2">
+                    <span className="text-sm">📞</span>
+                    <div>
+                      <div className="text-xs text-gray-400">Contact</div>
+                      <a href={`tel:${order.contact_number}`} className="text-sm text-blue-600 font-medium">
+                        {order.contact_number}
+                      </a>
+                    </div>
+                  </div>
 
-              {order.delivery_date && (
-                <div className="text-xs text-blue-600 mb-3">
-                  📅 Delivery: {new Date(order.delivery_date).toLocaleDateString()}
+                  {/* Address */}
+                  <div className="flex items-start gap-2">
+                    <span className="text-sm">📍</span>
+                    <div>
+                      <div className="text-xs text-gray-400">Address</div>
+                      <div className="text-sm text-gray-700">{order.address}</div>
+                    </div>
+                  </div>
+
+                  {/* Payment */}
+                  <div className="flex items-start gap-2">
+                    <span className="text-sm">💳</span>
+                    <div>
+                      <div className="text-xs text-gray-400">Payment</div>
+                      <div className={`text-sm font-medium ${
+                        order.payment_method === 'cod' ? 'text-green-600' : 'text-blue-600'
+                      }`}>
+                        {order.payment_method === 'cod' ? '💵 Cash on Delivery' : '📱 Online Payment'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Delivery Date */}
+                  {order.delivery_date && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm">📅</span>
+                      <div>
+                        <div className="text-xs text-gray-400">Delivery Date</div>
+                        <div className="text-sm text-gray-700">{new Date(order.delivery_date).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Notes */}
+                  {order.notes && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm">📝</span>
+                      <div>
+                        <div className="text-xs text-gray-400">Notes</div>
+                        <div className="text-sm text-gray-700 italic">{order.notes}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="px-4 pb-3 flex gap-2">
                 <button
                   onClick={() => handleToggleStatus(order)}
                   className={`flex-1 py-2 rounded-lg text-white text-sm font-medium ${themeColors.btn} active:opacity-80`}
