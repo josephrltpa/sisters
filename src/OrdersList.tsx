@@ -17,7 +17,12 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
   const filteredOrders = orders.filter(o => {
     if (filter === 'all') return true;
     return o.status === filter;
-  }).sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime());
+  }).sort((a, b) => {
+    // Sort by delivery_date, fallback to created_at if delivery_date is null
+    const dateA = a.delivery_date || a.created_at || '';
+    const dateB = b.delivery_date || b.created_at || '';
+    return new Date(dateA).getTime() - new Date(dateB).getTime();
+  });
 
   const handleToggleStatus = async (order: Order) => {
     const newStatus = order.status === 'pending' ? 'completed' : 'pending';
@@ -85,7 +90,13 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                 
                 <div className="flex justify-between items-center text-sm text-gray-500">
                   <span>₹{order.total_price.toLocaleString()}</span>
-                  <span>{new Date(order.created_at || '').toLocaleDateString()}</span>
+                  <span>
+                    {order.delivery_date 
+                      ? `📅 ${new Date(order.delivery_date).toLocaleDateString()}`
+                      : order.created_at 
+                        ? new Date(order.created_at).toLocaleDateString()
+                        : 'No date'}
+                  </span>
                 </div>
 
                 {/* Expand indicator */}
