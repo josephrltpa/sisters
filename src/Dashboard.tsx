@@ -67,7 +67,7 @@ const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-semibold text-gray-700">₹{order.total_price.toLocaleString()}</div>
-                    <div className="text-xs text-gray-400">{new Date(order.created_at || '').toLocaleDateString()}</div>
+                    <div className="text-xs text-gray-400">{new Date(order.created_at || '').toLocaleDateString('en-GB')}</div>
                   </div>
                 </div>
                 {order.notes && (
