@@ -92,9 +92,9 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                   <span>₹{order.total_price.toLocaleString()}</span>
                   <span>
                     {order.delivery_date 
-                      ? `📅 ${new Date(order.delivery_date).toLocaleDateString()}`
+                      ? `📅 ${new Date(order.delivery_date).toLocaleDateString('en-GB')}`
                       : order.created_at 
-                        ? new Date(order.created_at).toLocaleDateString()
+                        ? new Date(order.created_at).toLocaleDateString('en-GB')
                         : 'No date'}
                   </span>
                 </div>
@@ -148,7 +148,7 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                       <span className="text-sm">📅</span>
                       <div>
                         <div className="text-xs text-gray-400">Delivery Date</div>
-                        <div className="text-sm text-gray-700">{new Date(order.delivery_date).toLocaleDateString()}</div>
+                        <div className="text-sm text-gray-700">{new Date(order.delivery_date).toLocaleDateString('en-GB')}</div>
                       </div>
                     </div>
                   )}
