@@ -22,7 +22,15 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
     const dateA = a.delivery_date || a.created_at || '';
     const dateB = b.delivery_date || b.created_at || '';
     return new Date(dateA).getTime() - new Date(dateB).getTime();
-  });
+  }).map(order => ({
+    ...order,
+    items: order.items || [],
+    customer_name: order.customer_name || 'Unknown Customer',
+    contact_number: order.contact_number || '',
+    address: order.address || '',
+    total_price: order.total_price || 0,
+    payment_method: order.payment_method || 'cod'
+  }));
 
   const handleToggleStatus = async (order: Order) => {
     const newStatus = order.status === 'pending' ? 'completed' : 'pending';
