@@ -77,7 +77,9 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <div className="font-semibold text-gray-800">{order.customer_name}</div>
-                    <div className="text-sm text-gray-600">{order.product_name} × {order.quantity}</div>
+                    <div className="text-sm text-gray-600">
+                      {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     order.status === 'pending' 
@@ -153,17 +155,39 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                     </div>
                   )}
 
-                  {/* Add-ons */}
-                  {order.addons && order.addons.length > 0 && (
+                  {/* Items */}
+                  {order.items && order.items.length > 0 && (
                     <div className="flex items-start gap-2">
-                      <span className="text-sm">✨</span>
+                      <span className="text-sm">🛍️</span>
                       <div className="flex-1">
-                        <div className="text-xs text-gray-400">Add-ons</div>
-                        <div className="space-y-1 mt-1">
-                          {order.addons.map((addon, idx) => (
-                            <div key={idx} className="flex justify-between text-sm">
-                              <span className="text-gray-700">{addon.name}</span>
-                              <span className="text-amber-600 font-medium">+₹{addon.price}</span>
+                        <div className="text-xs text-gray-400 mb-2">Items</div>
+                        <div className="space-y-3">
+                          {order.items.map((item, idx) => (
+                            <div key={idx} className="bg-white rounded-lg p-2 border border-gray-200">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium text-gray-800">
+                                    {item.product_name} × {item.quantity}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    ₹{item.unit_price} each
+                                  </div>
+                                </div>
+                                <div className="text-sm font-semibold text-blue-700">
+                                  ₹{item.item_total.toLocaleString()}
+                                </div>
+                              </div>
+                              {item.addons && item.addons.length > 0 && (
+                                <div className="mt-2 pt-2 border-t border-gray-100">
+                                  <div className="text-xs text-gray-400 mb-1">✨ Add-ons</div>
+                                  {item.addons.map((addon, addonIdx) => (
+                                    <div key={addonIdx} className="flex justify-between text-xs">
+                                      <span className="text-gray-600">{addon.name}</span>
+                                      <span className="text-amber-600">+₹{addon.price}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
