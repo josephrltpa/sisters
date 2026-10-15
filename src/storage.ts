@@ -61,36 +61,66 @@ export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
 
   // Parse items JSON string back to array, handle undefined/null and migrate old format
   return (data || []).map(order => {
-    let items = [];
+    let items: any[] = [];
     
-    // Try to parse items if it exists
-    if (order.items) {
-      if (typeof order.items === 'string') {
-        try {
-          items = JSON.parse(order.items);
-        } catch (e) {
-          console.error('Error parsing items:', e);
-          items = [];
+    try {
+      // Try to parse items if it exists
+      if (order.items) {
+        if (typeof order.items === 'string') {
+          try {
+            items = JSON.parse(order.items);
+            if (!Array.isArray(items)) {
+              items = [];
+            }
+          } catch (e) {
+            console.error('Error parsing items JSON:', e);
+            items = [];
+          }
+        } else if (Array.isArray(order.items)) {
+          items = order.items;
         }
-      } else if (Array.isArray(order.items)) {
-        items = order.items;
       }
-    }
-    // If no items array, migrate from old format (product_id, product_name, quantity, addons)
-    else if (order.product_id || order.product_name) {
-      items = [{
-        product_id: order.product_id || '',
-        product_name: order.product_name || 'Unknown Product',
-        quantity: order.quantity || 1,
-        unit_price: order.total_price || 0,
-        addons: order.addons || [],
-        item_total: order.total_price || 0
-      }];
+      // If no items array, migrate from old format (product_id, product_name, quantity, addons)
+      else if (order.product_id || order.product_name) {
+        // Parse addons if it's a string
+        let addons: any[] = [];
+        if (order.addons) {
+          if (typeof order.addons === 'string') {
+            try {
+              addons = JSON.parse(order.addons);
+            } catch (e) {
+              addons = [];
+            }
+          } else if (Array.isArray(order.addons)) {
+            addons = order.addons;
+          }
+        }
+        
+        items = [{
+          product_id: order.product_id || '',
+          product_name: order.product_name || 'Unknown Product',
+          quantity: order.quantity || 1,
+          unit_price: order.total_price || 0,
+          addons: addons,
+          item_total: order.total_price || 0
+        }];
+      }
+    } catch (error) {
+      console.error('Error migrating order:', error, order);
+      items = [];
     }
     
+    // Ensure all required fields have fallback values
     return {
       ...order,
-      items
+      items,
+      customer_name: order.customer_name || 'Unknown Customer',
+      contact_number: order.contact_number || '',
+      address: order.address || '',
+      total_price: order.total_price || 0,
+      payment_method: order.payment_method || 'cod',
+      status: order.status || 'pending',
+      business: order.business || 'puan'
     };
   });
 }
