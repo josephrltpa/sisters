@@ -59,9 +59,11 @@ export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
     return [];
   }
 
-  // Parse items JSON string back to array, handle undefined/null
+  // Parse items JSON string back to array, handle undefined/null and migrate old format
   return (data || []).map(order => {
     let items = [];
+    
+    // Try to parse items if it exists
     if (order.items) {
       if (typeof order.items === 'string') {
         try {
@@ -73,6 +75,17 @@ export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
       } else if (Array.isArray(order.items)) {
         items = order.items;
       }
+    }
+    // If no items array, migrate from old format (product_id, product_name, quantity, addons)
+    else if (order.product_id || order.product_name) {
+      items = [{
+        product_id: order.product_id || '',
+        product_name: order.product_name || 'Unknown Product',
+        quantity: order.quantity || 1,
+        unit_price: order.total_price || 0,
+        addons: order.addons || [],
+        item_total: order.total_price || 0
+      }];
     }
     
     return {

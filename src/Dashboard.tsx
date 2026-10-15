@@ -7,10 +7,18 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
-  const pending = orders.filter(o => o.status === 'pending');
-  const completed = orders.filter(o => o.status === 'completed');
-  const totalRevenue = completed.reduce((sum, o) => sum + o.total_price, 0);
-  const pendingRevenue = pending.reduce((sum, o) => sum + o.total_price, 0);
+  // Ensure all orders have required fields
+  const safeOrders = orders.map(order => ({
+    ...order,
+    items: order.items || [],
+    customer_name: order.customer_name || 'Unknown Customer',
+    total_price: order.total_price || 0
+  }));
+  
+  const pending = safeOrders.filter(o => o.status === 'pending');
+  const completed = safeOrders.filter(o => o.status === 'completed');
+  const totalRevenue = completed.reduce((sum, o) => sum + (o.total_price || 0), 0);
+  const pendingRevenue = pending.reduce((sum, o) => sum + (o.total_price || 0), 0);
 
   const themeColors = business === 'puan' 
     ? { gradient: 'from-sky-400 to-sky-500', light: 'bg-sky-50', text: 'text-sky-700', accent: 'bg-sky-100' }
