@@ -14,17 +14,23 @@ export interface AddOn {
   price: number;
 }
 
-export interface Order {
-  id: string;
+export interface OrderItem {
   product_id: string;
   product_name: string;
+  quantity: number;
+  unit_price: number;
+  addons: AddOn[];
+  item_total: number;
+}
+
+export interface Order {
+  id: string;
   customer_name: string;
   contact_number: string;
   address: string;
   payment_method: PaymentMethod;
-  quantity: number;
+  items: OrderItem[];
   total_price: number;
-  addons: AddOn[];
   status: 'pending' | 'completed';
   notes?: string;
   business: 'puan' | 'cake';

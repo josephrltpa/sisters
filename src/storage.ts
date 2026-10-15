@@ -59,18 +59,18 @@ export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
     return [];
   }
 
-  // Parse addons JSON string back to array
+  // Parse items JSON string back to array
   return (data || []).map(order => ({
     ...order,
-    addons: typeof order.addons === 'string' ? JSON.parse(order.addons) : (order.addons || [])
+    items: typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || [])
   }));
 }
 
 export async function addOrder(order: Omit<Order, 'id'>) {
-  // Convert addons array to JSON string for Supabase
+  // Convert items array to JSON string for Supabase
   const orderData = {
     ...order,
-    addons: JSON.stringify(order.addons || [])
+    items: JSON.stringify(order.items || [])
   };
 
   const { data, error } = await supabase
@@ -99,10 +99,10 @@ export async function updateOrderStatus(id: string, status: 'pending' | 'complet
 }
 
 export async function updateOrder(id: string, updates: Partial<Omit<Order, 'id'>>) {
-  // Convert addons array to JSON string if present
+  // Convert items array to JSON string if present
   const updateData = {
     ...updates,
-    addons: updates.addons ? JSON.stringify(updates.addons) : undefined
+    items: updates.items ? JSON.stringify(updates.items) : undefined
   };
 
   const { error } = await supabase

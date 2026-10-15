@@ -63,7 +63,9 @@ const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="font-medium text-gray-800 text-sm">{order.customer_name}</div>
-                    <div className="text-xs text-gray-500">{order.product_name} × {order.quantity}</div>
+                    <div className="text-xs text-gray-500">
+                      {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-semibold text-gray-700">₹{order.total_price.toLocaleString()}</div>
