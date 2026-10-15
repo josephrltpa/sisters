@@ -59,11 +59,27 @@ export async function getOrders(business?: 'puan' | 'cake'): Promise<Order[]> {
     return [];
   }
 
-  // Parse items JSON string back to array
-  return (data || []).map(order => ({
-    ...order,
-    items: typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || [])
-  }));
+  // Parse items JSON string back to array, handle undefined/null
+  return (data || []).map(order => {
+    let items = [];
+    if (order.items) {
+      if (typeof order.items === 'string') {
+        try {
+          items = JSON.parse(order.items);
+        } catch (e) {
+          console.error('Error parsing items:', e);
+          items = [];
+        }
+      } else if (Array.isArray(order.items)) {
+        items = order.items;
+      }
+    }
+    
+    return {
+      ...order,
+      items
+    };
+  });
 }
 
 export async function addOrder(order: Omit<Order, 'id'>) {

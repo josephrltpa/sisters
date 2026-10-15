@@ -78,7 +78,7 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                   <div>
                     <div className="font-semibold text-gray-800">{order.customer_name}</div>
                     <div className="text-sm text-gray-600">
-                      {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                      {(order.items?.length || 0)} item{(order.items?.length || 0) !== 1 ? 's' : ''}
                     </div>
                   </div>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -156,7 +156,7 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                   )}
 
                   {/* Items */}
-                  {order.items && order.items.length > 0 && (
+                  {order.items && order.items.length > 0 ? (
                     <div className="flex items-start gap-2">
                       <span className="text-sm">🛍️</span>
                       <div className="flex-1">
@@ -193,6 +193,8 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                         </div>
                       </div>
                     </div>
+                  ) : (
+                    <div className="text-xs text-gray-400 italic">No items in this order</div>
                   )}
 
                   {/* Notes */}

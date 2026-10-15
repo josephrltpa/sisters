@@ -64,7 +64,7 @@ const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
                   <div>
                     <div className="font-medium text-gray-800 text-sm">{order.customer_name}</div>
                     <div className="text-xs text-gray-500">
-                      {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                      {(order.items?.length || 0)} item{(order.items?.length || 0) !== 1 ? 's' : ''}
                     </div>
                   </div>
                   <div className="text-right">
