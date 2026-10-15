@@ -10,7 +10,7 @@ interface OrdersListProps {
 }
 
 const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, onEdit }) => {
-  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('pending');
   const [showConfirm, setShowConfirm] = useState<string | null>(null);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
