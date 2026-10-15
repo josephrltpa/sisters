@@ -70,13 +70,13 @@ const Dashboard: React.FC<DashboardProps> = ({ business, orders }) => {
               <div key={order.id} className="bg-white rounded-xl p-3 border border-gray-100 shadow-sm">
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="font-medium text-gray-800 text-sm">{order.customer_name}</div>
+                    <div className="font-medium text-gray-800 text-sm">{order.customer_name || 'Unknown Customer'}</div>
                     <div className="text-xs text-gray-500">
                       {(order.items?.length || 0)} item{(order.items?.length || 0) !== 1 ? 's' : ''}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-semibold text-gray-700">₹{order.total_price.toLocaleString()}</div>
+                    <div className="text-sm font-semibold text-gray-700">₹{(order.total_price || 0).toLocaleString()}</div>
                     <div className="text-xs text-gray-400">{new Date(order.created_at || '').toLocaleDateString('en-GB')}</div>
                   </div>
                 </div>

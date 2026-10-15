@@ -84,7 +84,7 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
               >
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <div className="font-semibold text-gray-800">{order.customer_name}</div>
+                    <div className="font-semibold text-gray-800">{order.customer_name || 'Unknown Customer'}</div>
                     <div className="text-sm text-gray-600">
                       {(order.items?.length || 0)} item{(order.items?.length || 0) !== 1 ? 's' : ''}
                     </div>
@@ -99,7 +99,7 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                 </div>
                 
                 <div className="flex justify-between items-center text-sm text-gray-500">
-                  <span>₹{order.total_price.toLocaleString()}</span>
+                  <span>₹{(order.total_price || 0).toLocaleString()}</span>
                   <span>
                     {order.delivery_date 
                       ? `📅 ${new Date(order.delivery_date).toLocaleDateString('en-GB')}`
@@ -120,24 +120,28 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
               {expandedOrder === order.id && (
                 <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-gray-50 space-y-2">
                   {/* Contact */}
-                  <div className="flex items-start gap-2">
-                    <span className="text-sm">📞</span>
-                    <div>
-                      <div className="text-xs text-gray-400">Contact</div>
-                      <a href={`tel:${order.contact_number}`} className="text-sm text-blue-600 font-medium">
-                        {order.contact_number}
-                      </a>
+                  {order.contact_number && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm">📞</span>
+                      <div>
+                        <div className="text-xs text-gray-400">Contact</div>
+                        <a href={`tel:${order.contact_number}`} className="text-sm text-blue-600 font-medium">
+                          {order.contact_number}
+                        </a>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Address */}
-                  <div className="flex items-start gap-2">
-                    <span className="text-sm">📍</span>
-                    <div>
-                      <div className="text-xs text-gray-400">Address</div>
-                      <div className="text-sm text-gray-700">{order.address}</div>
+                  {order.address && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm">📍</span>
+                      <div>
+                        <div className="text-xs text-gray-400">Address</div>
+                        <div className="text-sm text-gray-700">{order.address}</div>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Payment */}
                   <div className="flex items-start gap-2">
@@ -170,34 +174,45 @@ const OrdersList: React.FC<OrdersListProps> = ({ business, orders, onRefresh, on
                       <div className="flex-1">
                         <div className="text-xs text-gray-400 mb-2">Items</div>
                         <div className="space-y-3">
-                          {order.items.map((item, idx) => (
-                            <div key={idx} className="bg-white rounded-lg p-2 border border-gray-200">
-                              <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                  <div className="text-sm font-medium text-gray-800">
-                                    {item.product_name} × {item.quantity}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    ₹{item.unit_price} each
-                                  </div>
-                                </div>
-                                <div className="text-sm font-semibold text-blue-700">
-                                  ₹{item.item_total.toLocaleString()}
-                                </div>
-                              </div>
-                              {item.addons && item.addons.length > 0 && (
-                                <div className="mt-2 pt-2 border-t border-gray-100">
-                                  <div className="text-xs text-gray-400 mb-1">✨ Add-ons</div>
-                                  {item.addons.map((addon, addonIdx) => (
-                                    <div key={addonIdx} className="flex justify-between text-xs">
-                                      <span className="text-gray-600">{addon.name}</span>
-                                      <span className="text-amber-600">+₹{addon.price}</span>
+                          {order.items.map((item, idx) => {
+                            // Ensure item has all required fields
+                            const safeItem = {
+                              product_name: item.product_name || 'Unknown Product',
+                              quantity: item.quantity || 1,
+                              unit_price: item.unit_price || 0,
+                              item_total: item.item_total || 0,
+                              addons: Array.isArray(item.addons) ? item.addons : []
+                            };
+                            
+                            return (
+                              <div key={idx} className="bg-white rounded-lg p-2 border border-gray-200">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <div className="text-sm font-medium text-gray-800">
+                                      {safeItem.product_name} × {safeItem.quantity}
                                     </div>
-                                  ))}
+                                    <div className="text-xs text-gray-500">
+                                      ₹{safeItem.unit_price} each
+                                    </div>
+                                  </div>
+                                  <div className="text-sm font-semibold text-blue-700">
+                                    ₹{safeItem.item_total.toLocaleString()}
+                                  </div>
                                 </div>
-                              )}
-                            </div>
-                          ))}
+                                {safeItem.addons.length > 0 && (
+                                  <div className="mt-2 pt-2 border-t border-gray-100">
+                                    <div className="text-xs text-gray-400 mb-1">✨ Add-ons</div>
+                                    {safeItem.addons.map((addon: any, addonIdx: number) => (
+                                      <div key={addonIdx} className="flex justify-between text-xs">
+                                        <span className="text-gray-600">{addon.name || 'Add-on'}</span>
+                                        <span className="text-amber-600">+₹{addon.price || 0}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

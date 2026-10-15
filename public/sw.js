@@ -1,4 +1,4 @@
-const CACHE_NAME = 'order-tracker-v4';
+const CACHE_NAME = 'order-tracker-v5';
 const urlsToCache = [
   '/',
   '/index.html',
