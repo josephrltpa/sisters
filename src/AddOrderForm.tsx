@@ -72,9 +72,10 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
       }
     }
     
-    // Recalculate item total
+    // Recalculate item total (allow 0 quantity for editing)
     const addonsTotal = item.addons.reduce((sum: number, addon: AddOn) => sum + addon.price, 0);
-    item.item_total = (item.unit_price * item.quantity) + addonsTotal;
+    const quantity = item.quantity || 0;
+    item.item_total = (item.unit_price * quantity) + addonsTotal;
     
     updated[index] = item;
     setItems(updated);
@@ -90,9 +91,10 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
     const updated = [...items];
     updated[itemIndex].addons = updated[itemIndex].addons.filter((_, i) => i !== addonIndex);
     
-    // Recalculate item total
+    // Recalculate item total (allow 0 quantity for editing)
     const addonsTotal = updated[itemIndex].addons.reduce((sum, addon) => sum + addon.price, 0);
-    updated[itemIndex].item_total = (updated[itemIndex].unit_price * updated[itemIndex].quantity) + addonsTotal;
+    const quantity = updated[itemIndex].quantity || 0;
+    updated[itemIndex].item_total = (updated[itemIndex].unit_price * quantity) + addonsTotal;
     
     setItems(updated);
   };
@@ -101,9 +103,10 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
     const updated = [...items];
     updated[itemIndex].addons[addonIndex] = { ...updated[itemIndex].addons[addonIndex], [field]: value };
     
-    // Recalculate item total
+    // Recalculate item total (allow 0 quantity for editing)
     const addonsTotal = updated[itemIndex].addons.reduce((sum, addon) => sum + addon.price, 0);
-    updated[itemIndex].item_total = (updated[itemIndex].unit_price * updated[itemIndex].quantity) + addonsTotal;
+    const quantity = updated[itemIndex].quantity || 0;
+    updated[itemIndex].item_total = (updated[itemIndex].unit_price * quantity) + addonsTotal;
     
     setItems(updated);
   };
@@ -111,12 +114,20 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate that all items have quantity >= 1
+    const validItems = items.filter(item => item.product_id && item.quantity >= 1);
+    
+    if (validItems.length === 0) {
+      alert('Please add at least one item with quantity of 1 or more');
+      return;
+    }
+
     const orderData: Omit<Order, 'id'> = {
       customer_name: customerName,
       contact_number: contactNumber,
       address: address,
       payment_method: paymentMethod,
-      items: items.filter(item => item.product_id), // Remove empty items
+      items: validItems,
       total_price: totalPrice,
       status: editOrder?.status || 'pending',
       notes: notes || undefined,
@@ -272,8 +283,13 @@ const AddOrderForm: React.FC<AddOrderFormProps> = ({ business, products, editOrd
                     <input
                       type="number"
                       min="1"
-                      value={item.quantity}
-                      onChange={e => handleUpdateItem(index, 'quantity', parseInt(e.target.value) || 1)}
+                      value={item.quantity || ''}
+                      onChange={e => {
+                        const value = e.target.value;
+                        // Allow empty string for editing, but convert to number
+                        const quantity = value === '' ? 0 : parseInt(value) || 0;
+                        handleUpdateItem(index, 'quantity', quantity);
+                      }}
                       className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-blue-400 outline-none"
                     />
                   </div>
